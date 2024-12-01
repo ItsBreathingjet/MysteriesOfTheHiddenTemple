@@ -26,6 +26,7 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     private int bossHealth;
 
     private JLabel monsterLabel;
+    private JLabel victoryLabel;
 
     public Main() {
         setTitle("Mysteries of the Secret Temple");
@@ -53,11 +54,20 @@ public class Main extends JFrame implements ActionListener, KeyListener {
         monsterLabel.setHorizontalAlignment(SwingConstants.CENTER);
         textImagePanel.add(monsterLabel, BorderLayout.SOUTH);
 
+        victoryLabel = new JLabel();
+        victoryLabel.setVisible(false);
+        victoryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        textImagePanel.add(victoryLabel, BorderLayout.NORTH);
+
         add(textImagePanel, BorderLayout.CENTER);
 
         ImageIcon bossIcon = new ImageIcon(getClass().getResource("monster.png"));
         Image bossImage = bossIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
         monsterLabel.setIcon(new ImageIcon(bossImage));
+
+        ImageIcon victoryIcon = new ImageIcon(getClass().getResource("victoryImage.jpg"));
+        Image victoryImage = victoryIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        victoryLabel.setIcon(new ImageIcon(victoryImage));
 
         // Boss health label styling
         bossHealthLabel = new JLabel("Boss Health: 150", SwingConstants.CENTER);
@@ -110,6 +120,13 @@ public class Main extends JFrame implements ActionListener, KeyListener {
 
         startFightButton.addActionListener(e -> startBossFight());
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Close the game gracefully
+                System.exit(0);  // Forcefully terminate the game
+            }
+        });
 
         musicManager();
         addKeyListener(this); 
@@ -369,13 +386,13 @@ public class Main extends JFrame implements ActionListener, KeyListener {
 
     private void bossTurn() {
         // Boss randomly chooses to attack or misses
-        String action = Math.random() > 0.8 ? "attack" : "miss";
+        String action = Math.random() > 0.60 ? "attack" : "miss";
 
         if (playerBlocked) {
             displayStory("The boss got their attack blocked!" + " Player health: " + playerHealth);
         } else {
             if (action.equals("attack")) {
-                int damage = (int) (Math.random() * 25) + 5;  // Random boss damage between 5 and 30
+                int damage = (int) (Math.random() * 30) + 5;  // Random boss damage between 5 and 30
                 playerHealth -= damage;
                 displayStory("The boss attacks and deals " + damage + " damage! Your health: " + playerHealth);
                 if (playerHealth <= 0) {
@@ -390,17 +407,20 @@ public class Main extends JFrame implements ActionListener, KeyListener {
         // Enable buttons after the boss's turn
         disableButtons(false);
     }
+    
 
     private void endGame(boolean won) {
-        String message = won ? "You have escaped the temple with your life! Congratulations! You win and will now be rich beyond your wildest dreams due to your discovery!" : "You have fallen in the temple. n/ You have met the fate of many others before you. n/ Game Over.";
+        String message = won ? "You have escaped the temple with your life! Congratulations! You win and will now be rich beyond your wildest dreams due to your discovery! Thanks for playing!" : "You have fallen in the temple. You have met the fate of many others before you. n/ Game Over.";
         displayStory(message);
-
+        monsterLabel.setVisible(false);
+        victoryLabel.setVisible(true);
         stopBossMusic();
         playVictoryMusic();
+
        
         SwingUtilities.invokeLater(() -> {
             try {
-                Thread.sleep(40000);  // Delay for 3 seconds
+                Thread.sleep(20000);  
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
