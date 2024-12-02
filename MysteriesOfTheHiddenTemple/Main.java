@@ -410,7 +410,7 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     
 
     private void endGame(boolean won) {
-        String message = won ? "You have escaped the temple with your life! Congratulations! You win and will now be rich beyond your wildest dreams due to your discovery! Thanks for playing!" : "You have fallen in the temple. You have met the fate of many others before you. n/ Game Over.";
+        String message = won ? "You have escaped the temple with your life! Congratulations! You win and will now be rich beyond your wildest dreams due to your discovery! Thanks for playing!" : "You have fallen in the temple. You have met the fate of many others before you. Game Over.";
         displayStory(message);
         monsterLabel.setVisible(false);
         victoryLabel.setVisible(true);

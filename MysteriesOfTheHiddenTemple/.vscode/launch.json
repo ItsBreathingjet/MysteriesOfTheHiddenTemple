@@ -5,6 +5,13 @@
             "name": "Main",
             "request": "launch",
             "mainClass": "Main",
+            "projectName": "MysteriesOfTheHiddenTemple_4f56dd29"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "Main",
             "projectName": "Game_4ab4bc5a"
         },
         {
