@@ -14,10 +14,9 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     private Set<String> solvedRiddles;
     private boolean bossRoomUnlocked;
     private boolean gameStarted;
-    private String leftHint = "For the Room in the East: we are a lot of right and lefts!";
-    private String rightHint = "For the Room in the North: The answer is right at your fingertips!";
-    private String upHint = "For the Room in the West: In the darkness we work best!";
-    private JLabel bossHealthLabel;
+    private String leftHint = "For the Room in the East: we are a lot of right and lefts! (THIS HINT ONLY APPEARS ONCE!)";
+    private String rightHint = "For the Room in the North: The answer is right at your fingertips! (THIS HINT ONLY APPEARS ONCE!)";
+    private String upHint = "For the Room in the West: In the darkness we work best! (THIS HINT ONLY APPEARS ONCE!)";
     private boolean playerBlocked = false;
     
 
@@ -25,8 +24,12 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     private int playerHealth;
     private int bossHealth;
 
+    
     private JLabel monsterLabel;
-    private JLabel victoryLabel;
+    
+    private JLabel northLabel;
+    private JLabel westLabel;
+    private JLabel eastLabel;
 
     public Main() {
         setTitle("Mysteries of the Secret Temple");
@@ -49,32 +52,53 @@ public class Main extends JFrame implements ActionListener, KeyListener {
 
         textImagePanel.add(textLabel, BorderLayout.CENTER);
 
+
+        
+
         monsterLabel = new JLabel();
         monsterLabel.setVisible(false);
         monsterLabel.setHorizontalAlignment(SwingConstants.CENTER);
         textImagePanel.add(monsterLabel, BorderLayout.SOUTH);
 
-        victoryLabel = new JLabel();
-        victoryLabel.setVisible(false);
-        victoryLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        textImagePanel.add(victoryLabel, BorderLayout.NORTH);
 
+        northLabel = new JLabel();
+        northLabel.setVisible(false);
+        northLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        textImagePanel.add(northLabel, BorderLayout.NORTH);
+
+        westLabel = new JLabel();
+        westLabel.setVisible(false);
+        westLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        textImagePanel.add(westLabel, BorderLayout.WEST);
+
+        eastLabel = new JLabel();
+        eastLabel.setVisible(false);
+        eastLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        textImagePanel.add(eastLabel, BorderLayout.EAST);
+        
         add(textImagePanel, BorderLayout.CENTER);
 
+
+        ImageIcon northIcon = new ImageIcon(getClass().getResource("north.jpg"));
+        Image northImage = northIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        northLabel.setIcon(new ImageIcon(northImage));
+    
+        ImageIcon eastIcon = new ImageIcon(getClass().getResource("east.jpg"));
+        Image eastImage = eastIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        eastLabel.setIcon(new ImageIcon(eastImage));
+
+        ImageIcon westIcon = new ImageIcon(getClass().getResource("west.jpg"));
+        Image westImage = westIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        westLabel.setIcon(new ImageIcon(westImage));
+
         ImageIcon bossIcon = new ImageIcon(getClass().getResource("monster.png"));
-        Image bossImage = bossIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        Image bossImage = bossIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
         monsterLabel.setIcon(new ImageIcon(bossImage));
 
-        ImageIcon victoryIcon = new ImageIcon(getClass().getResource("victoryImage.jpg"));
-        Image victoryImage = victoryIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-        victoryLabel.setIcon(new ImageIcon(victoryImage));
+        
 
         // Boss health label styling
-        bossHealthLabel = new JLabel("Boss Health: 150", SwingConstants.CENTER);
-        bossHealthLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        bossHealthLabel.setForeground(new Color(255, 215, 0)); // Gold color for the health label
-        add(bossHealthLabel, BorderLayout.SOUTH);
-
+        
         JPanel buttonPanel = new JPanel();
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -120,13 +144,6 @@ public class Main extends JFrame implements ActionListener, KeyListener {
 
         startFightButton.addActionListener(e -> startBossFight());
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                // Close the game gracefully
-                System.exit(0);  // Forcefully terminate the game
-            }
-        });
 
         musicManager();
         addKeyListener(this); 
@@ -201,9 +218,9 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     private void startIntroduction() {
         gameStarted = false;
 
-        ImageIcon templeIcon = new ImageIcon(getClass().getResource("temple.jpg"));
+        ImageIcon templeIcon = new ImageIcon(getClass().getResource("temple2.jpg"));
 
-        Image resizedImage = templeIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        Image resizedImage = templeIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon= new ImageIcon(resizedImage);
         int option = JOptionPane.showOptionDialog(
             this,
@@ -226,10 +243,15 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     }
 
     private void initializeGame() {
+        attackButton.setVisible(false);
+        blockButton.setVisible(false);
+        monsterLabel.setVisible(false);
+        victoryMusic.stop();
         solvedRiddles = new HashSet<>();
         bossRoomUnlocked = false;
         gameStarted = true;
         playTempleMusic();
+        
         
         displayStory("You are now in the temple. Use the arrow keys to choose your direction.");
     }
@@ -242,25 +264,37 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     private void navigate(String direction) {
         if (!gameStarted) return;
 
+
         String roomDescription;
         String hint = "";
 
         switch (direction) {
             case "up":
+
                 roomDescription = "You head up and enter a room with ancient carvings on the walls.";
                 hint = upHint;
+                westLabel.setVisible(false);
+                eastLabel.setVisible(false);
+                northLabel.setVisible(true);
                 upHint = ""; // Hint used
                 handleRiddleRoom("Room to the North", roomDescription, "What has keys but can’t open locks?", "keyboard", hint);
                 break;
             case "left":
                 roomDescription = "You turn left and find a room with flickering torches and a mysterious chest.";
                 hint = leftHint;
+                northLabel.setVisible(false);
+                eastLabel.setVisible(false);
+                westLabel.setVisible(true);
+                
                 leftHint = ""; // Hint used
                 handleRiddleRoom("Room to the West", roomDescription, "I’m tall when I’m young, and I’m short when I’m old. What am I?", "candle", hint);
                 break;
             case "right":
                 roomDescription = "You move right and find a dusty library filled with scrolls and books.";
                 hint = rightHint;
+                northLabel.setVisible(false);
+                westLabel.setVisible(false);
+                eastLabel.setVisible(true);
                 rightHint = ""; // Hint used
                 handleRiddleRoom("Room to the East", roomDescription, "The more of this you take, the more you leave behind. What is it?", "footsteps", hint);
                 break;
@@ -272,6 +306,8 @@ public class Main extends JFrame implements ActionListener, KeyListener {
                 }
                 break;
         }
+        this.revalidate();
+        this.repaint();
     }
 
     private void handleRiddleRoom(String roomName, String roomDescription, String riddle, String answer, String hint) {
@@ -307,7 +343,15 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     private void handleBossRoom() {
         displayStory("You have entered the boss room, but you need to start the fight.");
         startFightButton.setVisible(true); // Show the start fight button when boss room is entered
+        westLabel.setVisible(false);
+        eastLabel.setVisible(false);
+        northLabel.setVisible(false);
 
+        this.revalidate();
+        this.repaint();
+
+        monsterLabel.setVisible(true);
+        
     }
 
     
@@ -319,8 +363,12 @@ public class Main extends JFrame implements ActionListener, KeyListener {
         playerHealth = 100; // Reset player health
         bossHealth = 150;  // Set initial boss health
         displayStory("The battle begins! The boss stands before you.");
+        westLabel.setVisible(false);
+        eastLabel.setVisible(false);
+        northLabel.setVisible(false);
 
         monsterLabel.setVisible(true);
+        
 
         
 
@@ -330,6 +378,8 @@ public class Main extends JFrame implements ActionListener, KeyListener {
 
         // Disable the start fight button
         startFightButton.setVisible(false);
+
+       
     }
 
 
@@ -343,7 +393,7 @@ public class Main extends JFrame implements ActionListener, KeyListener {
         playerBlocked = false;
     
         if (bossHealth <= 0) {
-            displayStory("You have defeated the boss and escaped the temple! /n Congratulations!");
+            displayStory("You have defeated the boss and escaped the temple! Congratulations!");
             endGame(true);
         } else {
             disableButtons(true);  // Disable buttons during boss's turn
@@ -386,7 +436,7 @@ public class Main extends JFrame implements ActionListener, KeyListener {
 
     private void bossTurn() {
         // Boss randomly chooses to attack or misses
-        String action = Math.random() > 0.60 ? "attack" : "miss";
+        String action = Math.random() > 0.20 ? "attack" : "miss";
 
         if (playerBlocked) {
             displayStory("The boss got their attack blocked!" + " Player health: " + playerHealth);
@@ -409,28 +459,42 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     }
     
 
-    private void endGame(boolean won) {
-        String message = won ? "You have escaped the temple with your life! Congratulations! You win and will now be rich beyond your wildest dreams due to your discovery! Thanks for playing!" : "You have fallen in the temple. You have met the fate of many others before you. Game Over.";
-        displayStory(message);
-        monsterLabel.setVisible(false);
-        victoryLabel.setVisible(true);
+    private void endGame(boolean won ) {
+        String message = won ?"You have escaped the temple with your life! Congratulations you won! You will be rich beyond your wildest dreams due to your discovery! \nThanks for playing!" : "You have fallen in the temple. You have met the fate of many others before you. \nGame Over.";
+        String message2 = won ? "You have slain the guardian of the temple!" : "You have been slain by the guardian of the temple.";
+        displayStory(message2);
         stopBossMusic();
         playVictoryMusic();
+        ImageIcon victoryIcon;
+        if (won) {
+        victoryIcon = new ImageIcon(getClass().getResource("victoryImage.jpg")); // Icon for winning
+        } else {
+        victoryIcon = new ImageIcon(getClass().getResource("defeat.jpg")); // Icon for losing
+        }
 
-       
-        SwingUtilities.invokeLater(() -> {
-            try {
-                Thread.sleep(20000);  
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+        Image resizeImage = victoryIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        ImageIcon sizedIcon = new ImageIcon(resizeImage);
+        int option2 = JOptionPane.showOptionDialog(
+            this,
+            message,
+            "Mysteries of the Secret Temple",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            sizedIcon,
+            new String[]{"Replay?", "Quit Game"},
+            "Enter"
+        );
 
+        if (option2 == JOptionPane.YES_OPTION) {
+            initializeGame();
+        } else {
+            JOptionPane.showMessageDialog(this, "The game will now close. Goodbye!");
             System.exit(0);
-        });
-            
-        
+        }
+    
         
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
