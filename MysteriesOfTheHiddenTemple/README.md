@@ -1,24 +1,26 @@
 # MYSTERIES OF THE HIDDEN TEMPLE
 Welcome to the Myseries of the Secret Temple! My first ever game! This is a text-adventure game where you traverse the temple and complete riddles in order to find the way out and find eternal riches! Watch out though as a mighty force may be waiting for you. Good luck and have fun!
 
+
 IF YOU CANNOT SOLVE THE RIDDLES PLEASE SEE BELOW FOR SPOILERS
 ====================================================================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
 
 
 
