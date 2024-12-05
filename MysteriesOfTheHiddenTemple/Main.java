@@ -152,10 +152,12 @@ public class Main extends JFrame implements ActionListener, KeyListener {
         startIntroduction(); 
     }
 
+    // Music attributes
     private Clip templeMusic;
     private Clip bossMusic;
     private Clip victoryMusic;
 
+    // Music Manager for In-Game Music
     public void musicManager() {
         try {
             URL templeMusicUrl = getClass().getResource("temple.wav");
@@ -319,7 +321,7 @@ public class Main extends JFrame implements ActionListener, KeyListener {
         displayStory(roomDescription + (hint.isEmpty() ? "" : " You found a hint: " + hint));
         solveButton.setVisible(true);
 
-        // Remove previous listeners to prevent multiple executions
+       
         for (ActionListener listener : solveButton.getActionListeners()) {
             solveButton.removeActionListener(listener);
         }
@@ -361,7 +363,7 @@ public class Main extends JFrame implements ActionListener, KeyListener {
         playBossMusic();
         // Start the fight when the player presses the "Start Fight" button
         playerHealth = 100; // Reset player health
-        bossHealth = 150;  // Set initial boss health
+        bossHealth = 150;  // Set boss health
         displayStory("The battle begins! The boss stands before you.");
         westLabel.setVisible(false);
         eastLabel.setVisible(false);
@@ -425,7 +427,7 @@ public class Main extends JFrame implements ActionListener, KeyListener {
     
             @Override
             protected void done() {
-                bossTurn();  // Start the boss's turn after delay
+                bossTurn();  
             }
         }.execute();
     }
